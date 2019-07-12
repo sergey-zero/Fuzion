@@ -170,6 +170,8 @@ std::mutex footstepMutex;
 std::deque<Footstep> playerFootsteps[64]; // entIndex -> Footstep.
 
 QAngle viewanglesBackup;
+QAngle fake;
+QAngle actual;
 
 const char* ESP::ranks[] = {
 		"Unranked",
@@ -632,6 +634,95 @@ static void DrawBulletTrace( C_BasePlayer* player ) {
 
 	Draw::AddLine( src.x, src.y, dst.x, dst.y, ESP::GetESPPlayerColor( player, true ) );
 	Draw::AddRectFilled( ( int ) ( dst.x - 3 ), ( int ) ( dst.y - 3 ), 6, 6, ESP::GetESPPlayerColor( player, false ) );
+}
+static void DrawAATrace( QAngle fake, QAngle actual ) {
+	C_BasePlayer* localPlayer = ( C_BasePlayer* ) entityList->GetClientEntity( engine->GetLocalPlayer() );
+	Vector src3D, dst3D, forward;
+	Vector src, dst;
+	trace_t tr;
+	Ray_t ray;
+	CTraceFilter filter;
+	char* string;
+	Vector2D nameSize;
+	ImColor color;
+
+	filter.pSkip = localPlayer;
+	src3D = localPlayer->GetVecOrigin();
+// LBY
+	Math::AngleVectors( QAngle(0, *localPlayer->GetLowerBodyYawTarget(), 0), forward );
+	dst3D = src3D + ( forward * 50 );
+
+	ray.Init( src3D, dst3D );
+
+	trace->TraceRay( ray, MASK_SHOT, &filter, &tr );
+
+	if ( debugOverlay->ScreenPosition( src3D, src ) || debugOverlay->ScreenPosition( tr.endpos, dst ) )
+		return;
+
+	color = ImColor( 135, 235, 169 );
+	Draw::AddLine( src.x, src.y, dst.x, dst.y, color );
+	Draw::AddRectFilled( ( int ) ( dst.x - 3 ), ( int ) ( dst.y - 3 ), 6, 6, color );
+	string = XORSTR("LBY");
+	nameSize = Draw::GetTextSize( string, esp_font );
+	Draw::AddText(dst.x, dst.y, string, color );
+//////////////////////////////////
+
+// FAKE
+	Math::AngleVectors( QAngle(0, fake.y, 0), forward );
+	dst3D = src3D + ( forward * 50.f );
+
+	ray.Init( src3D, dst3D );
+
+	trace->TraceRay( ray, MASK_SHOT, &filter, &tr );
+
+	if ( debugOverlay->ScreenPosition( src3D, src ) || debugOverlay->ScreenPosition( tr.endpos, dst ) )
+		return;
+
+	color = ImColor( 5, 200, 5 );
+	Draw::AddLine( src.x, src.y, dst.x, dst.y, color );
+	Draw::AddRectFilled( ( int ) ( dst.x - 3 ), ( int ) ( dst.y - 3 ), 6, 6, color );
+	string = XORSTR("FAKE");
+	nameSize = Draw::GetTextSize( string, esp_font );
+	Draw::AddText(dst.x, dst.y, string, color );
+//////////////////////////////////
+
+// ACTUAL
+	Math::AngleVectors( QAngle(0, actual.y, 0), forward );
+	dst3D = src3D + ( forward * 50.f );
+
+	ray.Init( src3D, dst3D );
+
+	trace->TraceRay( ray, MASK_SHOT, &filter, &tr );
+
+	if ( debugOverlay->ScreenPosition( src3D, src ) || debugOverlay->ScreenPosition( tr.endpos, dst ) )
+		return;
+
+	color = ImColor( 225, 5, 5 );
+	Draw::AddLine( src.x, src.y, dst.x, dst.y, color );
+	Draw::AddRectFilled( ( int ) ( dst.x - 3 ), ( int ) ( dst.y - 3 ), 6, 6, color );
+	string = XORSTR("REAL");
+	nameSize = Draw::GetTextSize( string, esp_font );
+	Draw::AddText(dst.x, dst.y, string, color );
+//////////////////////////////////
+
+// FEET YAW
+	Math::AngleVectors( QAngle(0, localPlayer->GetAnimState()->currentFeetYaw, 0), forward );
+	dst3D = src3D + ( forward * 50.f );
+
+	ray.Init( src3D, dst3D );
+
+	trace->TraceRay( ray, MASK_SHOT, &filter, &tr );
+
+	if ( debugOverlay->ScreenPosition( src3D, src ) || debugOverlay->ScreenPosition( tr.endpos, dst ) )
+		return;
+
+	color = ImColor( 225, 225, 80 );
+	Draw::AddLine( src.x, src.y, dst.x, dst.y, color );
+	Draw::AddRectFilled( ( int ) ( dst.x - 3 ), ( int ) ( dst.y - 3 ), 6, 6, color );
+	string = XORSTR("FEET");
+	nameSize = Draw::GetTextSize( string, esp_font );
+	Draw::AddText(dst.x, dst.y, string, color );
+//////////////////////////////////
 }
 static void DrawTracer( C_BasePlayer* player ) {
 	Vector src3D;
@@ -1711,7 +1802,8 @@ void ESP::Paint()
 				DrawDZItems(entity, localplayer);
 		}
 	}
-
+	if (Settings::ThirdPerson::enabled)
+		DrawAATrace(fake, actual);
 	if (Settings::ESP::FOVCrosshair::enabled)
 		DrawFOVCrosshair();
 	if (Settings::ESP::Spread::enabled || Settings::ESP::Spread::spreadLimit)
@@ -1735,6 +1827,11 @@ void ESP::DrawModelExecute()
 void ESP::CreateMove(CUserCmd* cmd)
 {
 	viewanglesBackup = cmd->viewangles;
+
+	if(CreateMove::sendPacket)
+		fake = CreateMove::lastTickViewAngles;
+	else
+		actual = cmd->viewangles;
 
     if( Settings::ESP::enabled && Settings::ESP::Sounds::enabled && (Settings::ESP::Filters::allies || Settings::ESP::Filters::enemies || Settings::ESP::Filters::localplayer) ){
         CheckActiveSounds();
