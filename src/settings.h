@@ -776,6 +776,11 @@ namespace Settings
 			extern bool enabled;
 			extern float size;
 		}
+		
+		namespace backtrack
+		{
+			extern bool enabled;
+		}
 
 		namespace Spread
 		{
@@ -892,6 +897,11 @@ namespace Settings
 	}
 
 	namespace NoDuckCooldown
+	{
+		extern bool enabled;
+	}
+
+	namespace LagComp
 	{
 		extern bool enabled;
 	}
