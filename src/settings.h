@@ -586,12 +586,18 @@ namespace Settings
         {
             extern bool enabled;
             extern AntiAimYaw_Real type;
+            extern float offset;
         }
 
 		namespace Fake
 		{
 			extern bool enabled;
 			extern AntiAimYaw_Fake type;
+		}
+		
+		namespace RageDesyncFix
+		{
+			extern bool enabled;
 		}
 
         namespace Pitch

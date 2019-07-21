@@ -54,6 +54,8 @@ void HvH::RenderTab()
 					ImGui::PopItemWidth();
 				}
 				ImGui::Columns(1);
+				ImGui::SliderFloat(XORSTR("##REALOFFSET"), &Settings::AntiAim::Yaw::offset, 0, 360, "Yaw Offset: %0.f");
+				ImGui::Columns(1);
 				ImGui::Separator();
 				ImGui::Checkbox(XORSTR("Pitch"), &Settings::AntiAim::Pitch::enabled);
 				ImGui::Separator();
@@ -77,7 +79,17 @@ void HvH::RenderTab()
 				}
 				ImGui::Columns(1);
 				ImGui::Separator();
-				ImGui::Checkbox(XORSTR("Desync Yaw"), &Settings::AntiAim::Fake::enabled);
+				ImGui::Columns(2, NULL, true);
+				{
+					ImGui::Checkbox(XORSTR("Desync Yaw"), &Settings::AntiAim::Fake::enabled);
+				}
+				ImGui::NextColumn();
+				{
+					ImGui::PushItemWidth(-1);
+					ImGui::Checkbox(XORSTR("Desync fail fix (Bad for legit aa)"), &Settings::AntiAim::RageDesyncFix::enabled);
+					ImGui::PopItemWidth();
+				}
+
 				ImGui::Separator();
 				ImGui::Columns(2, NULL, true);
 				{

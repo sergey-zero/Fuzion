@@ -114,7 +114,7 @@ void Begin(CUserCmd* cmd)
 
     QAngle myAngle;
     engine->GetViewAngles(myAngle);
-    QAngle myAngle_rcs = myAngle + *localplayer->GetAimPunchAngle() * 2.0f;
+    QAngle myAngle_rcs = myAngle + *localplayer->GetAimPunchAngle();
 
     if (cmd->buttons & IN_ATTACK && weapon->GetNextPrimaryAttack() <= serverTime)
     {

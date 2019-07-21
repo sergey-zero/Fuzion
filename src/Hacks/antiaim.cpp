@@ -10,7 +10,9 @@
 #include "../Utils/xorstring.h"
 
 bool Settings::AntiAim::Yaw::enabled = false;
+float Settings::AntiAim::Yaw::offset = 0.0f;
 bool Settings::AntiAim::Fake::enabled = false;
+bool Settings::AntiAim::RageDesyncFix::enabled = false;
 bool Settings::AntiAim::Pitch::enabled = false;
 
 AntiAimYaw_Real Settings::AntiAim::Yaw::type = AntiAimYaw_Real::BACKWARDS;
@@ -292,15 +294,18 @@ static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 			break;
 		case AntiAimYaw_Real::FOLLOW:	
 			tmp = GetClosestPlayer();
-			if(tmp)
-				test = tmp->GetVecOrigin();
-
 			if(Aimbot::curtarget)
 				test = Aimbot::curtarget->GetVecOrigin();
-
+			else if(tmp)
+				test = tmp->GetVecOrigin();
+			else
+			{
+				angle.y += temp; // temporarly. later i will do some better thing
+				break;
+			}
 			followangle = Math::CalcAngle(((C_BasePlayer*)entityList->GetClientEntity(engine->GetLocalPlayer()))->GetEyePosition(), test);
 			temp = manualswitch ? -maxDelta : maxDelta;
-			angle.y = followangle.y + temp + 180.0f;
+			angle.y = followangle.y + temp;
 			break;
 		case AntiAimYaw_Real::LISP:
 			clamp = false;
@@ -454,9 +459,6 @@ static void DoAntiAimFake(QAngle &angle, CCSGOAnimState* animState)
 
 		case AntiAimYaw_Fake::MANUAL:
 			angle.y += manualswitch ? maxDelta : -maxDelta;
-			if(inputSystem->IsButtonDown(KEY_DOWN))
-			cvar->ConsoleDPrintf(XORSTR("nibba%f\n"), globalVars->interval_per_tick);
-
 			break;
 	}
 }
@@ -529,8 +531,8 @@ void AntiAim::CreateMove(CUserCmd* cmd)
 
     CCSGOAnimState* animState = localplayer->GetAnimState();
     if( Settings::AntiAim::LBYBreaker::enabled ){
-
-        if( vel2D >= 0.1f || !(localplayer->GetFlags() & FL_ONGROUND) || localplayer->GetFlags() & FL_FROZEN && CreateMove::sendPacket ){
+        if( CreateMove::sendPacket && (vel2D >= 0.1f || !(localplayer->GetFlags() & FL_ONGROUND) || localplayer->GetFlags() & FL_FROZEN) ){
+        	// todo: add first choked tick check
             lbyBreak = false;
             lastCheck = globalVars->curtime;
             nextUpdate = globalVars->curtime + 0.22;
@@ -554,6 +556,7 @@ void AntiAim::CreateMove(CUserCmd* cmd)
     if (Settings::AntiAim::Yaw::enabled)
     {
         DoAntiAimY(angle, should_clamp, animState);
+        angle.y += Settings::AntiAim::Yaw::offset;
 
         if ((nextUpdate - globalVars->interval_per_tick) >= globalVars->curtime && nextUpdate <= globalVars->curtime)
         	CreateMove::sendPacket = false;
@@ -565,6 +568,22 @@ void AntiAim::CreateMove(CUserCmd* cmd)
 
         if (Settings::AntiAim::HeadEdge::enabled && edging_head && !bSend)
             angle.y = edge_angle.y;
+
+        static bool bSavingAngles = true;
+        static float SavedYawForDesync; 
+        // When you make 180 while choked you will have desync >60 and you will be shot in head (teory) 
+        // but for legit your mouse movement probably be a bit late
+        if (Settings::AntiAim::RageDesyncFix::enabled){
+	        if (Settings::FakeLag::enabled ? !CreateMove::sendPacket : !bSend && bSavingAngles && !needToFlick){ 
+	        // todo: add first choked tick check instead of need to flick
+	        	SavedYawForDesync = angle.y;
+	        	bSavingAngles = false;
+	        }
+	    	else if (Settings::FakeLag::enabled ? CreateMove::sendPacket : bSend && !needToFlick){
+	        	angle.y = SavedYawForDesync;
+	        	bSavingAngles = true;
+	        }
+	    }
 
         Math::NormalizeAngles(angle);
     }
