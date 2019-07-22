@@ -294,6 +294,7 @@ static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 			break;
 		case AntiAimYaw_Real::FOLLOW:	
 			tmp = GetClosestPlayer();
+			temp = manualswitch ? -maxDelta : maxDelta;
 			if(Aimbot::curtarget)
 				test = Aimbot::curtarget->GetVecOrigin();
 			else if(tmp)
@@ -304,7 +305,6 @@ static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 				break;
 			}
 			followangle = Math::CalcAngle(((C_BasePlayer*)entityList->GetClientEntity(engine->GetLocalPlayer()))->GetEyePosition(), test);
-			temp = manualswitch ? -maxDelta : maxDelta;
 			angle.y = followangle.y + temp;
 			break;
 		case AntiAimYaw_Real::LISP:
