@@ -1093,6 +1093,7 @@ namespace Settings
 		extern bool enabled;
 		extern float distance;
         extern ShowedAngle type;
+		extern ButtonCode_t key;
 	}
 
 	namespace JumpThrow
