@@ -244,6 +244,7 @@ void Visuals::RenderTab()
 				ImGui::Checkbox(XORSTR("Recoil Crosshair"), &Settings::Recoilcrosshair::enabled);
 				ImGui::Checkbox(XORSTR("FOV Circle"), &Settings::ESP::FOVCrosshair::enabled);
 				ImGui::Checkbox(XORSTR("Show Spread"), &Settings::ESP::Spread::enabled);
+				ImGui::Checkbox(XORSTR("Sniper Crosshair"), &Settings::SniperCrosshair::enabled);
 			}
 			ImGui::NextColumn();
 			{
