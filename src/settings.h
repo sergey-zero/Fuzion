@@ -326,6 +326,7 @@ namespace Settings
 		extern ColorVar bodyColor;
 		extern ColorVar fontColor;
 		extern ColorVar accentColor;
+		extern ColorVar watermarkColor;
 
 		namespace Windows
 		{
