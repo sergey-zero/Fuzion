@@ -1010,6 +1010,11 @@ namespace Settings
 		extern ClanTagType type;
 	}
 
+	namespace FakeVote
+	{
+		extern char message[128];
+	}
+
 	namespace View
 	{
 		namespace NoAimPunch
