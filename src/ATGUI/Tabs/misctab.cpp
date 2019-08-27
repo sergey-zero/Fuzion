@@ -465,6 +465,7 @@ void Misc::RenderTab()
 				UI::KeyBindButton(&Settings::JumpThrow::key);
 				ImGui::Checkbox(XORSTR("Silent Defuse"), &Settings::AutoDefuse::silent);
 				ImGui::Checkbox(XORSTR("AWP Quick Switch"), &Settings::QuickSwitch::enabled);
+				ImGui::Checkbox(XORSTR("Attempt NoFall"), &Settings::NoFall::enabled);
 			}
 			ImGui::Columns(1);
 			ImGui::Separator();
