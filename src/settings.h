@@ -1104,6 +1104,11 @@ namespace Settings
 		extern bool enabled;
 		extern ButtonCode_t key;
 	}
+  
+	namespace NoFall
+	{
+		extern bool enabled;
+	}
 
 	namespace DisablePostProcessing
 	{
