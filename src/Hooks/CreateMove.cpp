@@ -72,7 +72,7 @@ bool Hooks::CreateMove(void* thisptr, float flInputSampleTime, CUserCmd* cmd)
 		PredictionSystem::EndPrediction();
 
 		EdgeJump::PostPredictionCreateMove(cmd);
-    NoFall::PostPredictionCreateMove(cmd);
+		NoFall::PostPredictionCreateMove(cmd);
 		ClanTagChanger::CreateMove();
 		FakeVote::CreateMove(cmd);
 
