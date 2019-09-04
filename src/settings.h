@@ -86,6 +86,7 @@ enum class Sound : int {
 	MEME,
 	ERROR,
 	ORCHESTRAL,
+	GAMESENSE,
 
 };
 
@@ -325,6 +326,7 @@ namespace Settings
 		extern ColorVar bodyColor;
 		extern ColorVar fontColor;
 		extern ColorVar accentColor;
+		extern ColorVar watermarkColor;
 
 		namespace Windows
 		{
@@ -592,6 +594,7 @@ namespace Settings
 		extern bool enabled;
         extern DrawingBackend backend;
 		extern ButtonCode_t key;
+		extern bool entityDistance;
 		extern TeamColorType teamColorType;
 		extern HealthColorVar enemyColor;
 		extern HealthColorVar allyColor;
@@ -615,9 +618,11 @@ namespace Settings
 		extern ColorVar molotovColor;
 		extern ColorVar mineColor;
 		extern ColorVar chargeColor;
+		extern ColorVar sonarColor;
 		extern ColorVar allyInfoColor;
 		extern ColorVar enemyInfoColor;
 		extern HealthColorVar localplayerColor;
+		extern ColorVar entityDistanceColor;
 
 		namespace Glow
 		{
@@ -768,6 +773,7 @@ namespace Settings
 			namespace Sounds {
 				extern bool enabled;
 				extern Sound sound;
+				extern float volume;
 			}
 		}
 
@@ -816,7 +822,7 @@ namespace Settings
 		}
 	}
 
-	namespace MaterialConfig {
+	namespace MaterialConfig { // not being saved nor loaded
 		extern bool enabled;
 		extern MaterialSystem_Config_t config;
 	}
@@ -826,16 +832,16 @@ namespace Settings
 		extern bool enabled;
 		extern float radius;
 	}
-	
+
 	namespace Eventlog
 	{
 		extern bool showEnemies;
 		extern bool showTeammates;
-		extern bool showLocalplayer;		
+		extern bool showLocalplayer;
 		extern float duration;
-		extern float lines;		
+		extern float lines;
 		extern ColorVar color;
-	}	
+	}
 
 	namespace Spammer
 	{
@@ -1004,6 +1010,12 @@ namespace Settings
 		extern ClanTagType type;
 	}
 
+	namespace FakeVote
+	{
+		extern char message[128];
+		extern char cmd[128]; // custom vote (doesn't being saved)
+	}
+
 	namespace View
 	{
 		namespace NoAimPunch
@@ -1091,6 +1103,7 @@ namespace Settings
 		extern bool enabled;
 		extern float distance;
         extern ShowedAngle type;
+		extern ButtonCode_t key;
 	}
 
 	namespace JumpThrow
@@ -1146,6 +1159,7 @@ namespace Settings
 		extern int frequency;
 
 	}
+
 	namespace AutoKnife
  	{
  		extern bool enabled;
@@ -1157,10 +1171,22 @@ namespace Settings
  			extern bool allies;
  		}
  	}
+
+	namespace QuickSwitch
+	{
+		extern bool enabled;
+	}
+
+	namespace LeftKnife
+	{
+		extern bool enabled;
+	}
+
 	namespace AngleIndicator
 	{
 		extern bool enabled;
 	}
+
     namespace Debug
     {
         namespace AutoWall
