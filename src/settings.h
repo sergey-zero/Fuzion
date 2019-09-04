@@ -1099,6 +1099,11 @@ namespace Settings
 		extern ButtonCode_t key;
 	}
 
+	namespace DoorSpam
+	{
+		extern bool enabled;
+	}
+  
 	namespace NoFall
 	{
 		extern bool enabled;
